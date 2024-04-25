@@ -1,0 +1,113 @@
+import { useState } from "react";
+import { Box, Button, Checkbox, Container, Heading, Input, Select, Stack, Text, Textarea } from "@chakra-ui/react";
+import { FaDownload, FaGoogle } from "react-icons/fa";
+
+const App = () => {
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [language, setLanguage] = useState("en");
+  const [spintaxes, setSpintaxes] = useState([
+    {
+      name: "Salutation",
+      enabled: true,
+      modelKey: "salut",
+      url: "https://docs.google.com/document/d/1axGve9wLTyP7rFUH-naqh0KiAeAXrEHQq5xHH_SSwNY/edit",
+      selectedModel: "claude-3-haiku-20240307",
+      systemPrompt: "",
+    },
+    // ... other spintaxes
+  ]);
+
+  const handleFileUpload = (event) => {
+    setUploadedFile(event.target.files[0]);
+  };
+
+  const handleLanguageChange = (event) => {
+    setLanguage(event.target.value);
+  };
+
+  const handleSpintaxToggle = (index) => {
+    const updatedSpintaxes = [...spintaxes];
+    updatedSpintaxes[index].enabled = !updatedSpintaxes[index].enabled;
+    setSpintaxes(updatedSpintaxes);
+  };
+
+  const handleModelChange = (index, selectedModel) => {
+    const updatedSpintaxes = [...spintaxes];
+    updatedSpintaxes[index].selectedModel = selectedModel;
+    setSpintaxes(updatedSpintaxes);
+  };
+
+  const handleSystemPromptChange = (index, systemPrompt) => {
+    const updatedSpintaxes = [...spintaxes];
+    updatedSpintaxes[index].systemPrompt = systemPrompt;
+    setSpintaxes(updatedSpintaxes);
+  };
+
+  const handleProcess = () => {
+    // Process the uploaded file and spintaxes
+    // ...
+  };
+
+  return (
+    <Container maxW="container.lg" py={8}>
+      <Heading as="h1" size="xl" textAlign="center" mb={8}>
+        Craft the Perfect Cold Email
+      </Heading>
+
+      <Stack spacing={6}>
+        <Box>
+          <Text mb={2}>Upload a CSV file</Text>
+          <Input type="file" accept=".csv" onChange={handleFileUpload} />
+        </Box>
+
+        <Box>
+          <Text mb={2}>Select the language</Text>
+          <Select value={language} onChange={handleLanguageChange}>
+            <option value="en">English</option>
+            <option value="nl">Dutch</option>
+            <option value="de">German</option>
+          </Select>
+        </Box>
+
+        <Box>
+          <Heading as="h2" size="lg" mb={4}>
+            Select Variables
+          </Heading>
+          <Stack spacing={4}>
+            {spintaxes.map((spintax, index) => (
+              <Box key={spintax.name}>
+                <Checkbox isChecked={spintax.enabled} onChange={() => handleSpintaxToggle(index)}>
+                  {spintax.name}
+                </Checkbox>
+                {spintax.enabled && (
+                  <Box mt={2}>
+                    <Select value={spintax.selectedModel} onChange={(e) => handleModelChange(index, e.target.value)} mb={2}>
+                      <option value="claude-3-haiku-20240307">Claude AI - claude-3-haiku-20240307</option>
+                      <option value="claude-3-sonnet-20240229">Claude AI - claude-3-sonnet-20240229</option>
+                      <option value="claude-3-opus-20240229">Claude AI - claude-3-opus-20240229</option>
+                      <option value="gpt-3.5-turbo-0125">OpenAI - gpt-3.5-turbo-0125</option>
+                      <option value="gpt-4-0125-preview">OpenAI - gpt-4-0125-preview</option>
+                    </Select>
+                    <Button leftIcon={<FaGoogle />} onClick={() => window.open(spintax.url, "_blank")} mb={2}>
+                      Open Google Docs
+                    </Button>
+                    <Textarea value={spintax.systemPrompt} onChange={(e) => handleSystemPromptChange(index, e.target.value)} placeholder="Enter system prompt" />
+                  </Box>
+                )}
+              </Box>
+            ))}
+          </Stack>
+        </Box>
+
+        <Button onClick={handleProcess} colorScheme="blue">
+          Process
+        </Button>
+
+        {/* Render the download button if the processed file exists */}
+        {/* <Button leftIcon={<FaDownload />}>Download Processed File</Button> */}
+      </Stack>
+    </Container>
+  );
+};
+
+export default App;
